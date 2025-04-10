@@ -1,76 +1,78 @@
-# DAG Register Allocation
+# Register Allocation with DAG Visualization
 
-This project implements a Directed Acyclic Graph (DAG) visualization and register allocation using the labeling algorithm. The program constructs a DAG, visualizes it, and calculates the minimum number of registers required using live range analysis.
-
-## Background
-
-In compiler design, register allocation is an important optimization step. This project uses a graph-based approach where nodes represent values and edges represent dependencies. The register allocation algorithm assigns a minimum number of registers to the nodes, ensuring that values with overlapping live ranges don't share registers.
+This Flask application provides a web-based GUI for visualizing register allocation using Directed Acyclic Graphs (DAGs), implementing the Sethi-Ullman labeling algorithm. The app allows users to input arithmetic expressions, visualizes the resulting DAG, and demonstrates the register allocation process.
 
 ## Features
 
-- Creation of custom DAGs or random DAG generation
-- Visualization of the DAG structure
-- Computation of node levels in the DAG
-- Calculation of live ranges for each node
-- Register allocation using the labeling algorithm
-- Determination of the minimum number of registers required
-- Web interface for interactive DAG creation and visualization
-
-## Requirements
-
-- Python 3.6+
-- NetworkX 3.1+
-- Matplotlib 3.7.1+
-- Flask 2.3.3+
-- NumPy<2.0 (compatibility requirement)
+- Parse arithmetic expressions into DAG representation
+- Calculate minimum register requirements using the Sethi-Ullman algorithm
+- Visualize the DAG with labeled nodes
+- Generate step-by-step register allocation instructions
+- Interactive web interface
 
 ## Installation
 
-```bash
-pip install -r requirements.txt
-```
+1. Clone this repository or download the source code
+
+2. Create a virtual environment (recommended):
+   ```
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 
-### Command-line Interface
+1. Run the Flask application:
+   ```
+   python app.py
+   ```
 
-Run the Python script for command-line usage:
+2. Open your web browser and navigate to:
+   ```
+   http://127.0.0.1:5000/
+   ```
 
-```bash
-python dag_register_allocation.py  # For random DAG generation
-python example_dag.py              # For the predefined example
-```
+3. Enter an arithmetic expression (e.g., `a + b * (c + d) - e`)
 
-### Web Interface
-
-Run the Flask web application:
-
-```bash
-python app.py
-```
-
-Then, open your browser and navigate to: http://127.0.0.1:5000/
-
-The web interface allows you to:
-1. Generate random DAGs with configurable parameters
-2. Create custom DAGs by adding nodes and edges interactively
-3. Run the predefined example DAG
-4. Visualize the DAG and register allocation results
-5. View detailed information about node levels, live ranges, and register assignments
-
-## Output
-
-The program will display:
-- A visualization of the DAG
-- Node levels (longest path from any root)
-- Live ranges for each node (start and end levels)
-- Register allocation for each node
-- The minimum number of registers required
+4. Click "Analyze" to see the DAG visualization and register allocation details
 
 ## How It Works
 
-1. **DAG Creation**: Either generates a random DAG or allows manual creation
-2. **Node Level Computation**: Determines the level (depth) of each node in the graph
-3. **Live Range Analysis**: Calculates when each value is "live" (needed)
-4. **Register Allocation**: Uses the labeling algorithm to assign registers minimizing overlap
-5. **Visualization**: Shows the DAG structure with register assignments 
+### DAG Construction
+The application parses arithmetic expressions into a DAG where:
+- Leaf nodes represent variables or constants
+- Internal nodes represent operations
+- Edges represent data dependencies
+
+### Register Allocation Algorithm
+The Sethi-Ullman algorithm assigns "labels" to nodes based on these rules:
+- Leaf nodes get label 1 (they need 1 register)
+- For internal nodes with children of different labels, the node's label is max(left.label, right.label)
+- If both children have the same label k, the node's label is k+1
+
+### Code Generation
+The application generates step-by-step instructions for register allocation:
+- Determines evaluation order (evaluating the more complex subtree first)
+- Tracks register usage across the evaluation
+- Outputs a sequence of instructions that minimizes register usage
+
+## Example
+
+For the expression `a + b * (c + d) - e`:
+
+1. The algorithm constructs a DAG with operations (+, *, -) and variables (a, b, c, d, e)
+2. Assigns labels to determine minimum register requirements
+3. Generates allocation steps showing which registers to use
+4. The root label indicates the minimum number of registers needed (2 in this case)
+
+## Extending the Application
+
+- Add support for more complex expressions
+- Implement register spilling for cases where not enough registers are available
+- Add visualization of the actual register allocation process
+- Support different register allocation algorithms for comparison
